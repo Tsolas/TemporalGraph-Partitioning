@@ -1,4 +1,4 @@
-package gr.tsolas.temporalgraphpartitioning.graph;
+package gr.tsolas.tgp.graph;
 
 import java.util.Map;
 import lombok.Data;

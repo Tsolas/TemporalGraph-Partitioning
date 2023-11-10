@@ -1,22 +1,32 @@
-package gr.tsolas.temporalgraphpartitioning.graph;
+package gr.tsolas.tgp.graph;
 
-import java.util.List;
+import java.util.HashSet;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  *
  * @author giorgos
  */
 @Data
-@NoArgsConstructor
+@AllArgsConstructor
 public class Dianode {
+
+  public Dianode(int id, int timeStart, int timeEnd) {
+    this.id = id;
+    this.timeStart = timeStart;
+    this.timeEnd = timeEnd;
+    this.edgesIncoming = new HashSet<>();
+    this.edgesOutgoing = new HashSet<>();
+    this.weight = 0;
+
+  }
 
   private int id;
   private int timeStart;
   private int timeEnd;
-  private List<Edge> edgesIncoming;
-  private List<Edge> edgesOutgoing;
+  private HashSet<Edge> edgesIncoming;
+  private HashSet<Edge> edgesOutgoing;
   private int weight;
 
   public void addIncomingEdge(Edge edge) {
