@@ -1,0 +1,54 @@
+package gr.tsolas.tgp.repository;
+
+import gr.tsolas.tgp.graph.Dianode;
+import gr.tsolas.tgp.graph.Worker;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ *
+ * @author giorgos
+ */
+public class GraphRepository {
+
+  private Map<Integer, Dianode> nodes;
+  private Map<Integer, Worker> workers;
+
+  public GraphRepository() {
+    this.nodes = new HashMap<>();
+    this.workers = new HashMap<>();
+  }
+
+  //dianode methods
+  public void addNode(Dianode node) {
+    nodes.put(node.getId(), node);
+  }
+
+  public Dianode getNodeById(int nodeId) {
+    return nodes.get(nodeId);
+  }
+
+  public Map<Integer, Dianode> getAllNodes() {
+    return Collections.unmodifiableMap(nodes);
+  }
+
+  //worker methods
+  public void addWorker(Worker worker) {
+    workers.put(worker.getId(), worker);
+  }
+
+  public Worker getWorkerById(int workerId) {
+    return workers.get(workerId);
+  }
+
+  public Map<Integer, Worker> getAllWorkers() {
+    return Collections.unmodifiableMap(workers);
+  }
+
+  public void createWorkers(int numberOfWorkers) {
+    for (int i = 0; i < numberOfWorkers; i++) {
+      addWorker(new Worker(i));
+    }
+  }
+}

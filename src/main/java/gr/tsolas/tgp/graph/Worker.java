@@ -1,5 +1,6 @@
 package gr.tsolas.tgp.graph;
 
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,13 @@ public class Worker {
   private int nodeCount;
   private int weight;
   private Map<Integer, Dianode> nodes;
+
+  public Worker(int id) {
+    this.id = id;
+    this.nodeCount = 0;
+    this.weight = 0;
+    this.nodes = new HashMap<>();
+  }
 
   public Dianode getNodeById(int nodeId) {
     return nodes.get(nodeId);

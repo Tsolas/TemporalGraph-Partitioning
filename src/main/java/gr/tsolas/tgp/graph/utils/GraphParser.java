@@ -2,14 +2,12 @@ package gr.tsolas.tgp.graph.utils;
 
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Edge;
+import gr.tsolas.tgp.repository.GraphRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  *
@@ -17,11 +15,11 @@ import java.util.HashMap;
  */
 public class GraphParser {
 
-  private Map<Integer, Dianode> nodesMap = new HashMap<>();
-  private List<Edge> edgesList = new ArrayList<>();
-  private int currentTimeInstance = 0;
+  private final GraphRepository repository;
+  private static int currentTimeInstance = 0;
 
-  public GraphParser() {
+  public GraphParser(GraphRepository repository) {
+    this.repository = repository;
   }
 
   public void parseFile(String filepath) {
@@ -47,7 +45,7 @@ public class GraphParser {
     if (2 == parts.length) {
       int nodeId = Integer.parseInt(parts[1]);
       Dianode node = new Dianode(nodeId, currentTimeInstance, Integer.MAX_VALUE);
-      nodesMap.put(nodeId, node);
+      repository.addNode(node);
     }
   }
 
@@ -57,6 +55,13 @@ public class GraphParser {
       int startNodeId = Integer.parseInt(parts[1]);
       int endNodeId = Integer.parseInt(parts[2]);
       Edge edge = new Edge(currentTimeInstance, Integer.MAX_VALUE, startNodeId, endNodeId);
+      Dianode startNode = repository.getNodeById(startNodeId);
+      Dianode endNode = repository.getNodeById(endNodeId);
+      if (startNode != null && endNode != null) {
+        startNode.addOutgoingEdge(edge);
+        endNode.addIncomingEdge(edge);
+      }
+
     }
   }
 
