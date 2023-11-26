@@ -1,6 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
 package gr.tsolas.tgp;
 
 import gr.tsolas.tgp.graph.Dianode;
@@ -15,13 +12,14 @@ import gr.tsolas.tgp.repository.GraphRepository;
 public class TemporalGraphPartitioning {
 
   public static void main(String[] args) {
-    if (args.length != 2) {
-      System.out.println("Please use: <number of Workers> <dataset-file-path>");
+    if (args.length != 3 || (!"1".equals(args[0]) && !"2".equals(args[0]))) {
+      System.out.println("Please use: <1 for hash-based or 2 for myPartitioning> <number of Workers> <dataset-file-path>");
       return;
     }
 
-    int numberOfWorkers = Integer.parseInt(args[0]);
-    String datasetFilePath = args[1];
+    String partitioningMethodSelector = args[0];
+    int numberOfWorkers = Integer.parseInt(args[1]);
+    String datasetFilePath = args[2];
 
     //Parser and repository initialization
     GraphRepository repository = new GraphRepository();
@@ -31,10 +29,11 @@ public class TemporalGraphPartitioning {
     repository.createWorkers(numberOfWorkers);
 
     //Parse the dataset
-    parser.parseFile(datasetFilePath);
+    parser.parseFile(partitioningMethodSelector, datasetFilePath);
 
     //display workers
     displayWorkers(repository);
+    displayAllNodes(repository);
   }
 
   private static void displayWorkers(GraphRepository repository) {
@@ -46,6 +45,13 @@ public class TemporalGraphPartitioning {
           System.out.println("  Node ID: " + node.getId());
         }
       }
+    }
+  }
+
+  private static void displayAllNodes(GraphRepository repository) {
+    System.out.println("All Nodes:");
+    for (Dianode node : repository.getAllNodes().values()) {
+      System.out.println(node.toString());
     }
   }
 }

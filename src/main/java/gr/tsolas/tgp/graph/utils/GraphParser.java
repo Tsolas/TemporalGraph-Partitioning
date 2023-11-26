@@ -2,27 +2,32 @@ package gr.tsolas.tgp.graph.utils;
 
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Edge;
+import gr.tsolas.tgp.partitioning.HashPartitioning;
+import gr.tsolas.tgp.partitioning.Partitioner;
+import gr.tsolas.tgp.partitioning.PartitioningStrategy;
 import gr.tsolas.tgp.repository.GraphRepository;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- *
- * @author giorgos
- */
 public class GraphParser {
 
   private final GraphRepository repository;
+  private final Partitioner partitioner;
   private static int currentTimeInstance = 0;
 
   public GraphParser(GraphRepository repository) {
     this.repository = repository;
+    this.partitioner = new Partitioner();
   }
 
-  public void parseFile(String filepath) {
+  public void parseFile(String partitioningMethodSelector, String filepath) {
+    PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector);
+    partitioner.setStrategy(strategy);
+
     Path path = Paths.get(filepath);
     try {
       List<String> allLines = Files.readAllLines(path);
@@ -46,6 +51,7 @@ public class GraphParser {
       int nodeId = Integer.parseInt(parts[1]);
       Dianode node = new Dianode(nodeId, currentTimeInstance, Integer.MAX_VALUE);
       repository.addNode(node);
+      partitioner.partitionNode(node);
     }
   }
 
@@ -61,7 +67,6 @@ public class GraphParser {
         startNode.addOutgoingEdge(edge);
         endNode.addIncomingEdge(edge);
       }
-
     }
   }
 
@@ -69,4 +74,16 @@ public class GraphParser {
     currentTimeInstance++;
   }
 
+  private PartitioningStrategy choosePartitioningStrategy(String partitioningMethodSelector) {
+    switch (partitioningMethodSelector) {
+      case "1":
+        return new HashPartitioning(repository.getWorkers());
+      case "2":
+        // Implement and return your custom partitioning strategy
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid partitioning method selector");
+    }
+    return null; // Placeholder, should never reach here if all cases are covered
+  }
 }

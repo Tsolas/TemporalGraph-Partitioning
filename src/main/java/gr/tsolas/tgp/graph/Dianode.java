@@ -43,4 +43,13 @@ public class Dianode {
     this.weight = this.edgesIncoming.size() + edgesOutgoing.size();
   }
 
+  @Override
+  public String toString() {
+    return "DiaNode{"
+            + "id=" + id
+            + ", timeStart=" + timeStart
+            + ", timeEnd=" + timeEnd
+            + '}';
+  }
+
 }
