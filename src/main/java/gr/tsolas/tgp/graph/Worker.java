@@ -13,26 +13,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Worker {
 
-  private int id;
-  private int nodeCount;
-  private int weight;
-  private Map<Integer, Dianode> nodes;
+    private int id;
+    private int nodeCount;
+    private int weight;
+    private Map<Integer, Dianode> nodes;
 
-  public Worker(int id) {
-    this.id = id;
-    this.nodeCount = 0;
-    this.weight = 0;
-    this.nodes = new HashMap<>();
-  }
+    public Worker(int id) {
+        this.id = id;
+        this.nodeCount = 0;
+        this.weight = 0;
+        this.nodes = new HashMap<>();
+    }
 
-  public Dianode getNodeById(int nodeId) {
-    return nodes.get(nodeId);
-  }
+    public Dianode getNodeById(int nodeId) {
+        return nodes.get(nodeId);
+    }
 
-  public void addNode(Dianode node) {
-    nodes.put(node.getId(), node);
-    nodeCount++;
-    weight += node.getWeight();
-  }
+    public void addNode(Dianode node) {
+        nodes.put(node.getId(), node);
+        nodeCount++;
+        weight += node.getWeight();
+    }
+
+    public void removeNode(Dianode node) {
+        if (nodes.containsKey(node.getId())) {
+            nodes.remove(node.getId());
+            nodeCount--;
+            weight -= node.getWeight(); // Update the weight when a node is removed
+        }
+    }
 
 }
