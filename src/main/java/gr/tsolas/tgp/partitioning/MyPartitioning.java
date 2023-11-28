@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  *
- * @author ed-dev
+ * @author giorgos
  */
 public class MyPartitioning implements PartitioningStrategy {
 

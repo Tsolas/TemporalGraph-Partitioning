@@ -1,7 +1,10 @@
 package gr.tsolas.tgp.partitioning;
 
+import gr.tsolas.tgp.graph.Dianode;
+import gr.tsolas.tgp.graph.Edge;
 import gr.tsolas.tgp.graph.Worker;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -26,4 +29,105 @@ public class Scoring {
         int maxPartitionSize = workers.values().stream().mapToInt(worker -> worker.getNodes().size()).max().orElse(0);
         return maxPartitionSize / averagePartitionSize;
     }
+
+//    /**
+//     * Calculates the normalized edge cut ratio for a given node to be added to
+//     * the partitions.
+//     *
+//     * The normalized edge cut ratio is defined as the number of edge cuts
+//     * divided by the total number of edges. An edge cut occurs when an edge
+//     * connects nodes in different partitions.
+//     *
+//     * @param workers The map of worker IDs to Worker objects, representing the
+//     * current partitions.
+//     * @param nodeToAdd The DiaNode object that is considered for addition to a
+//     * partition.
+//     * @param allNodes The map of all DiaNode objects in the graph.
+//     * @return The normalized edge cut ratio, where 0 indicates no edge cuts and
+//     * values closer to 1 indicate higher numbers of edge cuts compared to total
+//     * edges.
+//     */
+//    public double calculateNormalizedEdgeCutRatio(Map<Integer, Worker> workers, Dianode nodeToAdd, Map<Integer, Dianode> allNodes) {
+//        int totalEdges = 0;
+//        int edgeCuts = 0;
+//
+//        for (Worker worker : workers.values()) {
+//            for (Dianode node : worker.getNodes().values()) {
+//                Set<Edge> outgoingEdges = node.getEdgesOutgoing();
+//                totalEdges += outgoingEdges.size();
+//
+//                for (Edge edge : outgoingEdges) {
+//                    if (isEdgeCut(edge, nodeToAdd, workers, allNodes)) {
+//                        edgeCuts++;
+//                    }
+//                }
+//            }
+//        }
+//        //to avoid division by zero
+//        return totalEdges == 0 ? 0 : (double) edgeCuts / totalEdges;
+//    }
+    
+    
+    public double calculateWeightedEdgeCutScore(Map<Integer, Worker> workers, Dianode nodeToAdd, Map<Integer, Dianode> allNodes) {
+        double weightedEdgeCutScore = 0.0;
+        for (Worker worker : workers.values()) {
+            for (Dianode node : worker.getNodes().values()) {
+                Set<Edge> outgoingEdges = node.getEdgesOutgoing();
+                for (Edge edge : outgoingEdges) {
+                    if (isEdgeCut(edge, nodeToAdd, workers, allNodes)) {
+                        weightedEdgeCutScore += edge.getWeight();
+                    }
+                }
+            }
+        }
+        return weightedEdgeCutScore;
+    }
+
+    /**
+     * Determines if adding a given node to a partition results in an edge cut.
+     *
+     * An edge cut occurs if the node to be added and the node on the other end
+     * of an edge are in different partitions.
+     *
+     * @param edge The Edge object to check for a potential cut.
+     * @param nodeToAdd The DiaNode object that is being considered for
+     * addition.
+     * @param workers The map of worker IDs to Worker objects, representing the
+     * current partitions.
+     * @param allNodes The map of all DiaNode objects in the graph.
+     * @return true if adding the node results in an edge cut, false otherwise.
+     */
+    private boolean isEdgeCut(Edge edge, Dianode nodeToAdd, Map<Integer, Worker> workers, Map<Integer, Dianode> allNodes) {
+        int otherNodeId = (edge.getDianodeIdStart() == nodeToAdd.getId()) ? edge.getDianodeIdEnd() : edge.getDianodeIdStart();
+        Dianode otherNode = allNodes.get(otherNodeId);
+        Worker nodeWorker = findWorkerForNode(nodeToAdd, workers);
+        Worker otherNodeWorker = findWorkerForNode(otherNode, workers);
+        return nodeWorker != null && otherNodeWorker != null && !nodeWorker.equals(otherNodeWorker);
+    }
+
+    /**
+     * Finds the Worker object that currently contains a given DiaNode.
+     *
+     * @param node The DiaNode object to locate among the partitions.
+     * @param workers The map of worker IDs to Worker objects, representing the
+     * current partitions.
+     * @return The Worker object that contains the given node, or null if the
+     * node is not found in any partition.
+     */
+    private Worker findWorkerForNode(Dianode node, Map<Integer, Worker> workers) {
+        for (Worker worker : workers.values()) {
+            if (worker.getNodes().containsKey(node.getId())) {
+                return worker;
+            }
+        }
+        return null;
+    }
+    
+    public double normalizeLoadImbalanceRatio(double lir, double maxLir) {
+    if (lir <= 1) {
+        return 0; // Perfect balance scenario
+    }
+    return (lir - 1) / (maxLir - 1);
+}
+
 }
