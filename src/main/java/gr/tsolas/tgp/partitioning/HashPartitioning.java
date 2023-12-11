@@ -16,11 +16,11 @@ public class HashPartitioning implements PartitioningStrategy {
     this.workers = workers;
   }
 
+  //use implemented java function
   private int hashFunction(Dianode node) {
     int prime = 31;
     int hash = 1;
     hash = prime * hash + node.getId();
-    hash = prime * hash + node.getWeight();
     return hash;
   }
 

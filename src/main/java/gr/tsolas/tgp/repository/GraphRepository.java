@@ -5,17 +5,30 @@ import gr.tsolas.tgp.graph.Worker;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  *
  * @author giorgos
  */
-@Getter
-@Setter
 public class GraphRepository {
 
+    public Map<Integer, Dianode> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Map<Integer, Dianode> nodes) {
+        this.nodes = nodes;
+    }
+
+    public Map<Integer, Worker> getWorkers() {
+        return workers;
+    }
+
+    public void setWorkers(Map<Integer, Worker> workers) {
+        this.workers = workers;
+    }
+    
+//remove maybe.
   private Map<Integer, Dianode> nodes;
   private Map<Integer, Worker> workers;
 

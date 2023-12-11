@@ -1,20 +1,27 @@
 package gr.tsolas.tgp.partitioning;
 
 import gr.tsolas.tgp.graph.Dianode;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Getter;
 
 /**
  *
  * @author giorgos
  */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class Partitioner {
+
+    public Partitioner() {
+    }
+
+    public PartitioningStrategy getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(PartitioningStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public Partitioner(PartitioningStrategy strategy) {
+        this.strategy = strategy;
+    }
 
   private PartitioningStrategy strategy;
 

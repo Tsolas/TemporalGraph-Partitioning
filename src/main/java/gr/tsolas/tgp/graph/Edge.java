@@ -1,28 +1,75 @@
 package gr.tsolas.tgp.graph;
 
 import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 /**
  *
  * @author giorgos
  */
-@Data
-@AllArgsConstructor
 public class Edge {
+
+    public int getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(int timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public int getTimeEnd() {
+        return timeEnd;
+    }
+
+    public void setTimeEnd(int timeEnd) {
+        this.timeEnd = timeEnd;
+    }
+
+    public int getDianodeIdSource() {
+        return dianodeIdSource;
+    }
+
+    public void setDianodeIdSource(int dianodeIdSource) {
+        this.dianodeIdSource = dianodeIdSource;
+    }
+
+    public int getDianodeIdTarget() {
+        return dianodeIdTarget;
+    }
+
+    public void setDianodeIdTarget(int dianodeIdTarget) {
+        this.dianodeIdTarget = dianodeIdTarget;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public Edge() {
+    }
+
+    public Edge(int timeStart, int timeEnd, int dianodeIdSource, int dianodeIdTarget, int weight) {
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.dianodeIdSource = dianodeIdSource;
+        this.dianodeIdTarget = dianodeIdTarget;
+        this.weight = weight;
+    }
 
     private int timeStart;
     private int timeEnd;
-    private int dianodeIdStart;
-    private int dianodeIdEnd;
+    private int dianodeIdSource;
+    private int dianodeIdTarget;
     private int weight;
 
     public Edge(int timeStart, int timeEnd, int dianodeIdStart, int dianodeIdEnd) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
-        this.dianodeIdStart = dianodeIdStart;
-        this.dianodeIdEnd = dianodeIdEnd;
+        this.dianodeIdSource = dianodeIdStart;
+        this.dianodeIdTarget = dianodeIdEnd;
         this.weight = calculateWeight(timeStart, timeEnd); // Calculate the weight based on time instances
     }
 
@@ -41,13 +88,13 @@ public class Edge {
         Edge edge = (Edge) o;
         return timeStart == edge.timeStart
                 && timeEnd == edge.timeEnd
-                && dianodeIdStart == edge.dianodeIdStart
-                && dianodeIdEnd == edge.dianodeIdEnd;
+                && dianodeIdSource == edge.dianodeIdSource
+                && dianodeIdTarget == edge.dianodeIdTarget;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timeStart, timeEnd, dianodeIdStart, dianodeIdEnd);
+        return Objects.hash(timeStart, timeEnd, dianodeIdSource, dianodeIdTarget);
     }
 
 }

@@ -1,16 +1,72 @@
 package gr.tsolas.tgp.graph;
 
 import java.util.HashSet;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 /**
  *
  * @author giorgos
  */
-@Data
-@AllArgsConstructor
+
 public class Dianode {
+
+    public Dianode() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(int timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    public int getTimeEnd() {
+        return timeEnd;
+    }
+
+    public void setTimeEnd(int timeEnd) {
+        this.timeEnd = timeEnd;
+    }
+
+    public HashSet<Edge> getEdgesIncoming() {
+        return edgesIncoming;
+    }
+
+    public void setEdgesIncoming(HashSet<Edge> edgesIncoming) {
+        this.edgesIncoming = edgesIncoming;
+    }
+
+    public HashSet<Edge> getEdgesOutgoing() {
+        return edgesOutgoing;
+    }
+
+    public void setEdgesOutgoing(HashSet<Edge> edgesOutgoing) {
+        this.edgesOutgoing = edgesOutgoing;
+    }
+
+    public int getMemory() {
+        return memory;
+    }
+
+    public void setMemory(int memory) {
+        this.memory = memory;
+    }
+
+    public int getWorkerId() {
+        return workerId;
+    }
+
+    public void setWorkerId(int workerId) {
+        this.workerId = workerId;
+    }
 
   public Dianode(int id, int timeStart, int timeEnd) {
     this.id = id;
@@ -18,7 +74,7 @@ public class Dianode {
     this.timeEnd = timeEnd;
     this.edgesIncoming = new HashSet<>();
     this.edgesOutgoing = new HashSet<>();
-    this.weight = 0;
+    this.memory = 0;
 
   }
 
@@ -27,7 +83,8 @@ public class Dianode {
   private int timeEnd;
   private HashSet<Edge> edgesIncoming;
   private HashSet<Edge> edgesOutgoing;
-  private int weight;
+  private int memory;
+  private int workerId;
 
   public void addIncomingEdge(Edge edge) {
     this.edgesIncoming.add(edge);
@@ -40,7 +97,7 @@ public class Dianode {
   }
 
   private void updateWeight() {
-    this.weight = this.edgesIncoming.size() + edgesOutgoing.size();
+    this.memory = this.edgesIncoming.size() + edgesOutgoing.size();
   }
 
   @Override
