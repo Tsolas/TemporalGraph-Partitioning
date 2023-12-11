@@ -6,6 +6,7 @@ import gr.tsolas.tgp.partitioning.HashPartitioning;
 import gr.tsolas.tgp.partitioning.MyPartitioning;
 import gr.tsolas.tgp.partitioning.Partitioner;
 import gr.tsolas.tgp.partitioning.PartitioningStrategy;
+import gr.tsolas.tgp.partitioning.Scoring;
 import gr.tsolas.tgp.repository.GraphRepository;
 
 /**
@@ -28,6 +29,9 @@ public class TemporalGraphPartitioning {
         GraphRepository repository = new GraphRepository();
         repository.createWorkers(numberOfWorkers); // create and add workers
 
+        //Instantiate Scoring class
+        Scoring score = new Scoring(repository);
+
         // Initialize the partitioner and set the strategy based on user selection
         Partitioner partitioner = new Partitioner(); // Assuming Partitioner can work without Scoring for now
         PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector, repository);
@@ -41,6 +45,9 @@ public class TemporalGraphPartitioning {
 
         // Display the results
         displayWorkers(repository);
+
+        double finalScore = score.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
+        System.out.println("Final Weighted Edge Cut Score Ratio: " + finalScore);
     }
 
     private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository) {
@@ -61,6 +68,6 @@ public class TemporalGraphPartitioning {
                 System.out.println("  Node ID: " + nodeId);
             }
         }
+
     }
 }
-
