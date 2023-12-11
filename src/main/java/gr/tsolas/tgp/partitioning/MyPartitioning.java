@@ -2,6 +2,7 @@ package gr.tsolas.tgp.partitioning;
 
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
+import gr.tsolas.tgp.repository.GraphRepository;
 import java.util.Map;
 
 /**
@@ -13,9 +14,9 @@ public class MyPartitioning implements PartitioningStrategy {
     private Map<Integer, Worker> workers;
     private Scoring scoring;
 
-    public MyPartitioning(Map<Integer, Worker> workers) {
+    public MyPartitioning(Map<Integer, Worker> workers,GraphRepository repository) {
         this.workers = workers;
-        this.scoring = new Scoring();
+        this.scoring = new Scoring(repository);
     }
 
     @Override

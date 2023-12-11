@@ -79,7 +79,7 @@ public class GraphParser {
             case "1":
                 return new HashPartitioning(repository.getWorkers());
             case "2":
-                return new MyPartitioning(repository.getWorkers());
+                return new MyPartitioning(repository.getWorkers(),repository);
             default:
                 throw new IllegalArgumentException("Invalid partitioning method selector");
         }

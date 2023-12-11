@@ -1,7 +1,9 @@
 package gr.tsolas.tgp.partitioning;
 
+import com.google.common.hash.Hashing;
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
+import gr.tsolas.tgp.graph.utils.DianodeFunnel;
 import java.util.Map;
 
 /**
@@ -16,13 +18,13 @@ public class HashPartitioning implements PartitioningStrategy {
     this.workers = workers;
   }
 
-  //use implemented java function
-  private int hashFunction(Dianode node) {
-    int prime = 31;
-    int hash = 1;
-    hash = prime * hash + node.getId();
-    return hash;
-  }
+ private int hashFunction(Dianode node) {
+    return Hashing.goodFastHash(32)
+                  .newHasher()
+                  .putObject(node, new DianodeFunnel())
+                  .hash()
+                  .asInt();
+}
 
   @Override
   public void partition(Dianode node) {
