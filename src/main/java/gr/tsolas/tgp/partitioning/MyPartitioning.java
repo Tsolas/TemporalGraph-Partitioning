@@ -24,16 +24,17 @@ public class MyPartitioning implements PartitioningStrategy {
         Worker bestWorker = null;
         double bestScore = Double.MAX_VALUE;
         for (Worker worker : workers.values()) {
-            // Temporarily add the node to the worker for scoring
-            worker.addNode(node);
-            double score = scoring.calculateLoadImbalanceRatio(workers);
-            // Check if this worker offers a better score
-            if (score < bestScore) {
-                bestScore = score;
+            double loadImbalanceScore = scoring.calculateLoadImbalanceRatio(workers);
+            double edgeCutScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), node);
+            
+            // Combine the scores for future implementation
+            //double combinedScore = loadImbalanceScore + edgeCutScore; 
+
+            // Check if this worker offers a better score for edge cuts
+            if (edgeCutScore < bestScore) {
+                bestScore = edgeCutScore;
                 bestWorker = worker;
             }
-            // Remove the node after scoring
-            worker.removeNode(node);
         }
         // Finally, assign the node to the best worker
         if (bestWorker != null) {

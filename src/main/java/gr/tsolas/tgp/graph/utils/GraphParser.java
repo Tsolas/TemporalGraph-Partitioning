@@ -18,32 +18,30 @@ public class GraphParser {
     private final GraphRepository repository;
     private final Partitioner partitioner;
     private static int currentTimeInstance = 0;
-
-    public GraphParser(GraphRepository repository) {
+    
+    public GraphParser(GraphRepository repository, Partitioner partitioner) {
         this.repository = repository;
-        this.partitioner = new Partitioner();
+        this.partitioner = partitioner;
     }
 
-    public void parseFile(String partitioningMethodSelector, String filepath) {
-        PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector);
-        partitioner.setStrategy(strategy);
-
-        Path path = Paths.get(filepath);
-        try {
-            List<String> allLines = Files.readAllLines(path);
-            for (String line : allLines) {
-                if (line.startsWith("vertex")) {
-                    processVertex(line);
-                } else if (line.startsWith("edge")) {
-                    processEdge(line);
-                } else if (line.startsWith("graph")) {
-                    processGraph();
-                }
+    public void parseFile(String filepath) {
+    Path path = Paths.get(filepath);
+    try {
+        List<String> allLines = Files.readAllLines(path);
+        for (String line : allLines) {
+            if (line.startsWith("vertex")) {
+                processVertex(line);
+            } else if (line.startsWith("edge")) {
+                processEdge(line);
+            } else if (line.startsWith("graph")) {
+                processGraph();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
+
 
     private void processVertex(String line) {
         String[] parts = line.split("\\s+");

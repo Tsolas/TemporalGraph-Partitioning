@@ -39,6 +39,8 @@ public class Scoring {
         return maxPartitionSize / averagePartitionSize;
     }
 
+    
+    //fix to calculate the ratio
     public double calculateWeightedEdgeCutScoreRatio(Map<Integer, Worker> workers, Dianode nodeToAdd, Map<Integer, Dianode> allNodes) {
         double weightedEdgeCutScore = 0.0;
         //total edge weight of dataset
@@ -58,9 +60,9 @@ public class Scoring {
     }
 
     //checks edge cuts for possible worker.
-    public double calculateWeightedEdgeCutScoreNew(int workerId, Dianode nodeToAdd) {
+    public double calculateWeightedEdgeCutScore(int workerId, Dianode nodeToAdd) {
         double weightedEdgeCutScore = 0.0;
-        //for all the edges of the node calculate the edge cuts considering the wight of each edge.
+        //for all the edges of the node calculate the edge cuts considering the weight of each edge.
         Set<Edge> outgoingEdges = nodeToAdd.getEdgesOutgoing();
         for (Edge edge : outgoingEdges) {
             if (isEdgeCut(edge,workerId)) {
@@ -74,7 +76,6 @@ public class Scoring {
             }
         }
         return weightedEdgeCutScore;
-        //modify isEdgeCutNew
     }
     
     
