@@ -17,6 +17,9 @@ public class Edge {
     }
 
     public int getTimeEnd() {
+        if (timeEnd == -1) {
+            //  return currenttimeinstance
+        }
         return timeEnd;
     }
 
