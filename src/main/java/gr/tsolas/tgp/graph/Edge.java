@@ -1,5 +1,6 @@
 package gr.tsolas.tgp.graph;
 
+import gr.tsolas.tgp.graph.utils.GraphParser;
 import java.util.Objects;
 
 /**
@@ -17,10 +18,10 @@ public class Edge {
     }
 
     public int getTimeEnd() {
-        if (timeEnd == -1) {
-            //  return currenttimeinstance
+        if (this.timeEnd == -1) {
+            return GraphParser.getCurrentTimeInstance();
         }
-        return timeEnd;
+        return this.timeEnd;
     }
 
     public void setTimeEnd(int timeEnd) {
