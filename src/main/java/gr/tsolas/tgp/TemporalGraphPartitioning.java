@@ -6,6 +6,7 @@ import gr.tsolas.tgp.partitioning.HashPartitioning;
 import gr.tsolas.tgp.partitioning.MyPartitioning;
 import gr.tsolas.tgp.partitioning.Partitioner;
 import gr.tsolas.tgp.partitioning.PartitioningStrategy;
+import gr.tsolas.tgp.partitioning.Scoring;
 import gr.tsolas.tgp.repository.GraphRepository;
 
 /**
@@ -25,11 +26,11 @@ public class TemporalGraphPartitioning {
         String datasetFilePath = args[2];
         double loadImbalanceThreshold = Double.parseDouble(args[3]);
 
-        // Initialize the repository
+        // Initialize the repository and create workers
         GraphRepository repository = new GraphRepository();
         repository.createWorkers(numberOfWorkers);
 
-        // Initialize the partitioner and set the strategy based on user selection
+        // Initialize the partitioner with the chosen strategy
         Partitioner partitioner = new Partitioner();
         PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector, repository, loadImbalanceThreshold);
         partitioner.setStrategy(strategy);
@@ -40,8 +41,19 @@ public class TemporalGraphPartitioning {
         // Parse the dataset
         parser.parseFile(datasetFilePath);
 
-        // Display the results
+        // Display the partitioning results
         displayWorkers(repository);
+
+        // Initialize Scoring and calculate scores
+        Scoring scoring = new Scoring(repository);
+        double loadImbalanceRatio = scoring.calculateLoadImbalanceRatio();
+        System.out.println("Final Load Imbalance Ratio: " + loadImbalanceRatio);
+
+        int totalEdgeCuts = scoring.calculateTotalEdgeCuts();
+        System.out.println("Total Edge Cuts: " + totalEdgeCuts);
+
+        double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
+        System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
     }
 
     private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository, double threshold) {
@@ -58,9 +70,9 @@ public class TemporalGraphPartitioning {
         System.out.println("Workers and their assigned nodes:");
         for (Worker worker : repository.getAllWorkers().values()) {
             System.out.println("Worker ID: " + worker.getId() + ", Node Count: " + worker.getNodes().size());
-            for (Integer nodeId : worker.getNodes().keySet()) {
-                System.out.println("  Node ID: " + nodeId);
-            }
+//            for (Integer nodeId : worker.getNodes().keySet()) {
+//                System.out.println("  Node ID: " + nodeId);
+//            }
         }
     }
 }

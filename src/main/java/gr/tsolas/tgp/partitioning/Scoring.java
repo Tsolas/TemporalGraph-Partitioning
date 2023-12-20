@@ -20,21 +20,35 @@ public class Scoring {
     private final GraphRepository repository;
 
     /**
-     * This method computes the load imbalance ratio which is the ratio of the
-     * size of the largest partition to the average partition size.
+     * Calculates the load imbalance ratio across all workers. The load
+     * imbalance ratio is defined as the ratio of the number of nodes in the
+     * largest partition (worker) to the number of nodes in the smallest
+     * partition. A higher ratio indicates a greater imbalance. If there are no
+     * workers, or if the smallest partition contains no nodes, the method
+     * returns 1.0, suggesting perfect balance or an empty set of workers.
      *
-     * @param workers
-     * @return
+     * @return The load imbalance ratio.
      */
-    public double calculateLoadImbalanceRatio(Map<Integer, Worker> workers) {
-        if (workers == null || workers.isEmpty()) {
-            // Returning 1 to indicate perfect balance when no workers are present
+    public double calculateLoadImbalanceRatio() {
+        Map<Integer, Worker> workers = repository.getAllWorkers();
+        if (workers.isEmpty()) {
             return 1.0;
         }
-        int totalNodes = workers.values().stream().mapToInt(worker -> worker.getNodes().size()).sum();
-        double averagePartitionSize = (double) totalNodes / workers.size();
-        int maxPartitionSize = workers.values().stream().mapToInt(worker -> worker.getNodes().size()).max().orElse(0);
-        return maxPartitionSize / averagePartitionSize;
+        int maxNodes = 0; // Maximum number of nodes in a worker
+        int minNodes = Integer.MAX_VALUE; // Minimum number of nodes in a worker
+        for (Worker worker : workers.values()) {
+            int workerNodeCount = worker.getNodes().size();
+            if (workerNodeCount > maxNodes) {
+                maxNodes = workerNodeCount;
+            }
+            if (workerNodeCount < minNodes) {
+                minNodes = workerNodeCount;
+            }
+        }
+        if (minNodes == 0) {
+            return 1.0;
+        }
+        return (double) minNodes / maxNodes;
     }
 
     /**
@@ -81,6 +95,37 @@ public class Scoring {
             }
         }
         return weightedEdgeCutScore;
+    }
+
+    /**
+     * Calculates the total number of edge cuts after the partitioning process.
+     * An edge is considered cut if it connects nodes that are in different
+     * workers.
+     *
+     * @return The total number of edge cuts.
+     */
+    public int calculateTotalEdgeCuts() {
+        int edgeCuts = 0;
+        for (Dianode node : repository.getAllNodes().values()) {
+            int nodeWorkerId = findWorkerIdForNode(node);
+            Set<Edge> outgoingEdges = node.getEdgesOutgoing();
+            for (Edge edge : outgoingEdges) {
+                Dianode targetNode = repository.getNodeById(edge.getDianodeIdTarget());
+                if (targetNode != null && findWorkerIdForNode(targetNode) != nodeWorkerId) {
+                    edgeCuts++;
+                }
+            }
+        }
+        return edgeCuts;
+    }
+
+    private int findWorkerIdForNode(Dianode node) {
+        for (Map.Entry<Integer, Worker> entry : repository.getAllWorkers().entrySet()) {
+            if (entry.getValue().getNodes().containsKey(node.getId())) {
+                return entry.getKey();
+            }
+        }
+        return -1; // Indicates that the worker was not found
     }
 
     private boolean isEdgeCut(Edge edge, int workerId) {
