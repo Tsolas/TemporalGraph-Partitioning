@@ -54,6 +54,7 @@ public class TemporalGraphPartitioning {
 
         double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
         System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
+        System.out.println("Total Edges:  " + parser.getEdgeCount());
     }
 
     private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository, double threshold) {

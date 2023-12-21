@@ -19,12 +19,12 @@ public class MyPartitioning implements PartitioningStrategy {
     public MyPartitioning(GraphRepository repository, double threshold) {
         this.workers = repository.getWorkers();
         this.scoring = new Scoring(repository);
-        this.loadImbalanceThreshold = threshold;  // Initialize the threshold
+        this.loadImbalanceThreshold = threshold;
     }
 
     @Override
     public void partition(Dianode node) {
-        if (isLoadImbalanced(0.5)) {
+        if (isLoadImbalanced(loadImbalanceThreshold)) {
             assignToLeastFullWorker(node);
         } else {
             assignBasedOnCommunicationCostScore(node);
@@ -84,6 +84,7 @@ public class MyPartitioning implements PartitioningStrategy {
     private boolean isLoadImbalanced(double threshold) {
         int maxNodes = workers.values().stream().mapToInt(worker -> worker.getNodes().size()).max().orElse(0);
         int minNodes = workers.values().stream().mapToInt(worker -> worker.getNodes().size()).min().orElse(0);
-        return maxNodes == 0 || (double) minNodes / maxNodes < threshold;
+        // Check if the difference in node count is less than the threshold percentage of the maxNodes
+        return maxNodes - minNodes > maxNodes * threshold;
     }
 }

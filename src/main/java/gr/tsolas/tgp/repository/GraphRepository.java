@@ -27,45 +27,44 @@ public class GraphRepository {
     public void setWorkers(Map<Integer, Worker> workers) {
         this.workers = workers;
     }
-    
-//remove maybe.
-  private Map<Integer, Dianode> nodes;
-  private Map<Integer, Worker> workers;
 
-  public GraphRepository() {
-    this.nodes = new HashMap<>();
-    this.workers = new HashMap<>();
-  }
+    private Map<Integer, Dianode> nodes;
+    private Map<Integer, Worker> workers;
 
-  //dianode methods
-  public void addNode(Dianode node) {
-    nodes.put(node.getId(), node);
-  }
-
-  public Dianode getNodeById(int nodeId) {
-    return nodes.get(nodeId);
-  }
-
-  public Map<Integer, Dianode> getAllNodes() {
-    return Collections.unmodifiableMap(nodes);
-  }
-
-  //worker methods
-  public void addWorker(Worker worker) {
-    workers.put(worker.getId(), worker);
-  }
-
-  public Worker getWorkerById(int workerId) {
-    return workers.get(workerId);
-  }
-
-  public Map<Integer, Worker> getAllWorkers() {
-    return Collections.unmodifiableMap(workers);
-  }
-
-  public void createWorkers(int numberOfWorkers) {
-    for (int i = 0; i < numberOfWorkers; i++) {
-      addWorker(new Worker(i));
+    public GraphRepository() {
+        this.nodes = new HashMap<>();
+        this.workers = new HashMap<>();
     }
-  }
+
+    //dianode methods
+    public void addNode(Dianode node) {
+        nodes.put(node.getId(), node);
+    }
+
+    public Dianode getNodeById(int nodeId) {
+        return nodes.get(nodeId);
+    }
+
+    public Map<Integer, Dianode> getAllNodes() {
+        return Collections.unmodifiableMap(nodes);
+    }
+
+    //worker methods
+    public void addWorker(Worker worker) {
+        workers.put(worker.getId(), worker);
+    }
+
+    public Worker getWorkerById(int workerId) {
+        return workers.get(workerId);
+    }
+
+    public Map<Integer, Worker> getAllWorkers() {
+        return Collections.unmodifiableMap(workers);
+    }
+
+    public void createWorkers(int numberOfWorkers) {
+        for (int i = 0; i < numberOfWorkers; i++) {
+            addWorker(new Worker(i));
+        }
+    }
 }
