@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.stream.Stream;
 
 public class GraphParser {
 
@@ -28,47 +28,49 @@ public class GraphParser {
 
     public void parseFile(String filepath) {
         Path path = Paths.get(filepath);
-        try {
-            List<String> allLines = Files.readAllLines(path);
-            for (String line : allLines) {
-                if (line.startsWith("vertex")) {
-                    processVertex(line);
-                } else if (line.startsWith("edge")) {
-                    processEdge(line);
-                } else if (line.startsWith("graph")) {
-                    processGraph();
-                }
-            }
+        try (Stream<String> lines = Files.lines(path)) {
+            lines.forEach(this::processLine);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void processVertex(String line) {
-        String[] parts = line.split("\\s+");
-        if (parts.length == 2) {
-            int nodeId = Integer.parseInt(parts[1]);
-            Dianode node = new Dianode(nodeId, currentTimeInstance, -1);
-            repository.addNode(node);
-            partitioner.partitionNode(node);
+    private void processLine(String line) {
+        if (line.startsWith("vertex")) {
+            processVertex(line);
+        } else if (line.startsWith("edge")) {
+            processEdge(line);
+        } else if (line.startsWith("graph")) {
+            processGraph();
         }
     }
 
+    private void processVertex(String line) {
+    int firstSpace = line.indexOf(' ');
+    if (firstSpace != -1) {
+        int nodeId = Integer.parseInt(line.substring(firstSpace + 1));
+        Dianode node = new Dianode(nodeId, currentTimeInstance, -1);
+        repository.addNode(node);
+        partitioner.partitionNode(node);
+    }
+}
+
     private void processEdge(String line) {
-        String[] parts = line.split("\\s+");
-        if (parts.length == 3) {
-            int startNodeId = Integer.parseInt(parts[1]);
-            int endNodeId = Integer.parseInt(parts[2]);
-            Edge edge = new Edge(currentTimeInstance, -1, startNodeId, endNodeId);
-            edgeCount++;
-            Dianode startNode = repository.getNodeById(startNodeId);
-            Dianode endNode = repository.getNodeById(endNodeId);
-            if (startNode != null && endNode != null) {
-                startNode.addOutgoingEdge(edge);
-                endNode.addIncomingEdge(edge);
-            }
+    int firstSpace = line.indexOf(' ');
+    int secondSpace = line.indexOf(' ', firstSpace + 1);
+    if (secondSpace != -1) {
+        int startNodeId = Integer.parseInt(line.substring(firstSpace + 1, secondSpace));
+        int endNodeId = Integer.parseInt(line.substring(secondSpace + 1));
+        Edge edge = new Edge(currentTimeInstance, -1, startNodeId, endNodeId);
+        edgeCount++;
+        Dianode startNode = repository.getNodeById(startNodeId);
+        Dianode endNode = repository.getNodeById(endNodeId);
+        if (startNode != null && endNode != null) {
+            startNode.addOutgoingEdge(edge);
+            endNode.addIncomingEdge(edge);
         }
     }
+}
 
     private void processGraph() {
         currentTimeInstance++;

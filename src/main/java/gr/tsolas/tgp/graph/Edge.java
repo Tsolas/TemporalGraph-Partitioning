@@ -96,9 +96,5 @@ public class Edge {
                 && dianodeIdTarget == edge.dianodeIdTarget;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(timeStart, timeEnd, dianodeIdSource, dianodeIdTarget);
-    }
 
 }
