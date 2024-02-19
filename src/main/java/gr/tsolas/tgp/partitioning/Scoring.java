@@ -106,7 +106,7 @@ public class Scoring {
      */
     public int calculateTotalEdgeCuts() {
         int edgeCuts = 0;
-        for (Dianode node : repository.getAllNodes().values()) {
+        for (Dianode node : repository.getAllNodes()) {
             int nodeWorkerId = findWorkerIdForNode(node);
             Set<Edge> outgoingEdges = node.getEdgesOutgoing();
             for (Edge edge : outgoingEdges) {

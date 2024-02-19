@@ -91,15 +91,15 @@ public class Dianode {
 
     public void addIncomingEdge(Edge edge) {
         this.edgesIncoming.add(edge);
-        updateWeight();
+        updateMemory();
     }
 
     public void addOutgoingEdge(Edge edge) {
         this.edgesOutgoing.add(edge);
-        updateWeight();
+        updateMemory();
     }
 
-    private void updateWeight() {
+    private void updateMemory() {
         this.memory = this.edgesIncoming.size() + edgesOutgoing.size();
     }
 

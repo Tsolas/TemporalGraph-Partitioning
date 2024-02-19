@@ -1,5 +1,6 @@
 package gr.tsolas.tgp;
 
+import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
 import gr.tsolas.tgp.graph.utils.GraphParser;
 import gr.tsolas.tgp.partitioning.HashPartitioning;
@@ -55,6 +56,21 @@ public class TemporalGraphPartitioning {
         double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
         System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
         System.out.println("Total Edges:  " + parser.getEdgeCount());
+
+        System.out.println("Total nodes in repository: " + repository.getNodes().size());
+//check sorting
+        for (int i = 0; i < 10; i++) {
+            Dianode dianode = repository.getNodes().get(i);
+            System.out.println("Dianode ID: " + dianode.getId()
+                    + ", TimeStart: " + dianode.getTimeStart()
+                    + ", TimeEnd: " + dianode.getTimeEnd()
+                    + ", Memory: " + dianode.getMemory()
+                    + ", WorkerID: " + dianode.getWorkerId()
+                    + ", Incoming Edges Count: " + dianode.getEdgesIncoming().size()
+                    + ", Outgoing Edges Count: " + dianode.getEdgesOutgoing().size()
+            );
+        }
+
     }
 
     private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository, double threshold) {
@@ -71,9 +87,7 @@ public class TemporalGraphPartitioning {
         System.out.println("Workers and their assigned nodes:");
         for (Worker worker : repository.getAllWorkers().values()) {
             System.out.println("Worker ID: " + worker.getId() + ", Node Count: " + worker.getNodes().size());
-//            for (Integer nodeId : worker.getNodes().keySet()) {
-//                System.out.println("  Node ID: " + nodeId);
-//            }
         }
     }
+
 }
