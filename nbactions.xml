@@ -10,9 +10,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
             </goals>
             <properties>
-                <exec.vmArgs>-Xms512m -Xmx2048m</exec.vmArgs>
+                <exec.vmArgs>-Xmx17g</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>2 4 text.txt 0.1</exec.appArgs>
+                <exec.appArgs>2 4 text2.txt 0.1</exec.appArgs>
                 <exec.mainClass>gr.tsolas.tgp.TemporalGraphPartitioning</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
@@ -27,9 +27,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
             </goals>
             <properties>
-                <exec.vmArgs>-Xms512m -Xmx2048m -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+                <exec.vmArgs>-Xmx17g -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>2 4 text.txt 0.1</exec.appArgs>
+                <exec.appArgs>2 4 text2.txt 0.1</exec.appArgs>
                 <exec.mainClass>gr.tsolas.tgp.TemporalGraphPartitioning</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
@@ -45,11 +45,11 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
             </goals>
             <properties>
-                <exec.vmArgs>-Xms512m -Xmx2048m</exec.vmArgs>
+                <exec.vmArgs>-Xmx17g</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.mainClass>gr.tsolas.tgp.TemporalGraphPartitioning</exec.mainClass>
                 <exec.executable>java</exec.executable>
-                <exec.appArgs>2 4 text.txt 0.1</exec.appArgs>
+                <exec.appArgs>2 4 text2.txt 0.1</exec.appArgs>
             </properties>
         </action>
     </actions>
