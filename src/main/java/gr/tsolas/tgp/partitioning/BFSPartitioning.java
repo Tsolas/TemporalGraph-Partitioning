@@ -106,8 +106,10 @@ public class BFSPartitioning implements PartitioningStrategy {
     private void scorePartitioning() {
         int totalEdgeCuts = scoring.calculateTotalEdgeCuts();
         double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(workers);
+        double loadImbalanceRatio = scoring.calculateLoadImbalanceRatio();
 
         System.out.println("Total Edge Cuts: " + totalEdgeCuts);
         System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
+        System.out.println("Load Imbalance Ratio: " + loadImbalanceRatio);
     }
 }
