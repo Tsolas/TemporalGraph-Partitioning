@@ -1,18 +1,17 @@
 package gr.tsolas.tgp;
 
+import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
 import gr.tsolas.tgp.graph.utils.GraphParser;
+import gr.tsolas.tgp.partitioning.BFSPartitioning;
 import gr.tsolas.tgp.partitioning.HashPartitioning;
-import gr.tsolas.tgp.partitioning.MyPartitioning;
 import gr.tsolas.tgp.partitioning.Partitioner;
 import gr.tsolas.tgp.partitioning.PartitioningStrategy;
 import gr.tsolas.tgp.partitioning.Scoring;
 import gr.tsolas.tgp.repository.GraphRepository;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author giorgos
- */
 public class TemporalGraphPartitioning {
 
     public static void main(String[] args) {
@@ -26,26 +25,31 @@ public class TemporalGraphPartitioning {
         String datasetFilePath = args[2];
         double loadImbalanceThreshold = Double.parseDouble(args[3]);
 
-        // Initialize the repository and create workers
+        // Step 1: Initialize the repository without creating workers
         GraphRepository repository = new GraphRepository();
+
+        // Step 2: Initialize the scoring with the repository
+        Scoring scoring = new Scoring(repository);
+
+        // Step 3: Create workers with the scoring instance
+        repository.setScoring(scoring);
         repository.createWorkers(numberOfWorkers);
 
-        // Initialize the partitioner with the chosen strategy
+        // Step 4: Initialize the partitioner and parser
         Partitioner partitioner = new Partitioner();
-        PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector, repository, loadImbalanceThreshold);
-        partitioner.setStrategy(strategy);
-
-        // Initialize the parser with the repository and partitioner
         GraphParser parser = new GraphParser(repository, partitioner);
 
         // Parse the dataset
         parser.parseFile(datasetFilePath);
 
+        // Choose the partitioning strategy and set it in the partitioner
+        PartitioningStrategy strategy = choosePartitioningStrategy(partitioningMethodSelector, repository, loadImbalanceThreshold, scoring);
+        partitioner.setStrategy(strategy);
+
         // Display the partitioning results
         displayWorkers(repository);
 
-        // Initialize Scoring and calculate scores
-        Scoring scoring = new Scoring(repository);
+        // Calculate and display scores
         double loadImbalanceRatio = scoring.calculateLoadImbalanceRatio();
         System.out.println("Final Load Imbalance Ratio: " + loadImbalanceRatio);
 
@@ -57,11 +61,12 @@ public class TemporalGraphPartitioning {
         System.out.println("Total Edges:  " + parser.getEdgeCount());
     }
 
-    private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository, double threshold) {
+    private static PartitioningStrategy choosePartitioningStrategy(String methodSelector, GraphRepository repository, double threshold, Scoring scoring) {
         if ("1".equals(methodSelector)) {
             return new HashPartitioning(repository.getWorkers());
         } else if ("2".equals(methodSelector)) {
-            return new MyPartitioning(repository, threshold);
+            List<Dianode> allNodes = new ArrayList<>(repository.getAllNodes().values());
+            return new BFSPartitioning(repository.getWorkers(), allNodes, scoring);
         } else {
             throw new IllegalArgumentException("Invalid partitioning method selector");
         }
@@ -71,9 +76,6 @@ public class TemporalGraphPartitioning {
         System.out.println("Workers and their assigned nodes:");
         for (Worker worker : repository.getAllWorkers().values()) {
             System.out.println("Worker ID: " + worker.getId() + ", Node Count: " + worker.getNodes().size());
-//            for (Integer nodeId : worker.getNodes().keySet()) {
-//                System.out.println("  Node ID: " + nodeId);
-//            }
         }
     }
 }

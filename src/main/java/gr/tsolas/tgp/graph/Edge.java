@@ -1,7 +1,6 @@
 package gr.tsolas.tgp.graph;
 
 import gr.tsolas.tgp.graph.utils.GraphParser;
-import java.util.Objects;
 
 /**
  *
@@ -95,6 +94,5 @@ public class Edge {
                 && dianodeIdSource == edge.dianodeIdSource
                 && dianodeIdTarget == edge.dianodeIdTarget;
     }
-
 
 }

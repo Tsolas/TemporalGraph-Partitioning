@@ -2,14 +2,31 @@ package gr.tsolas.tgp.graph;
 
 import gr.tsolas.tgp.graph.utils.GraphParser;
 import java.util.HashSet;
+import java.util.Set;
 
-/**
- *
- * @author giorgos
- */
 public class Dianode {
 
+    private int id;
+    private int timeStart;
+    private int timeEnd;
+    private HashSet<Edge> edgesIncoming;
+    private HashSet<Edge> edgesOutgoing;
+    private int memory;
+    private int workerId;
+    private Set<Dianode> neighbors; // New field for neighbors
+
     public Dianode() {
+        this.neighbors = new HashSet<>(); // Initialize neighbors set
+    }
+
+    public Dianode(int id, int timeStart, int timeEnd) {
+        this.id = id;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.edgesIncoming = new HashSet<>();
+        this.edgesOutgoing = new HashSet<>();
+        this.memory = 0;
+        this.neighbors = new HashSet<>(); // Initialize neighbors set
     }
 
     public int getId() {
@@ -71,23 +88,13 @@ public class Dianode {
         this.workerId = workerId;
     }
 
-    public Dianode(int id, int timeStart, int timeEnd) {
-        this.id = id;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.edgesIncoming = new HashSet<>();
-        this.edgesOutgoing = new HashSet<>();
-        this.memory = 0;
-
+    public Set<Dianode> getNeighbors() {
+        return neighbors;
     }
 
-    private int id;
-    private int timeStart;
-    private int timeEnd;
-    private HashSet<Edge> edgesIncoming;
-    private HashSet<Edge> edgesOutgoing;
-    private int memory;
-    private int workerId;
+    public void addNeighbor(Dianode neighbor) {
+        neighbors.add(neighbor);
+    }
 
     public void addIncomingEdge(Edge edge) {
         this.edgesIncoming.add(edge);
@@ -111,5 +118,4 @@ public class Dianode {
                 + ", timeEnd=" + timeEnd
                 + '}';
     }
-
 }

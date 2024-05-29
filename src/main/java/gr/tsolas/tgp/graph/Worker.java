@@ -1,16 +1,24 @@
 package gr.tsolas.tgp.graph;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- *
- * @author giorgos
- */
+import gr.tsolas.tgp.partitioning.Scoring;
+import java.util.*;
 
 public class Worker {
 
-    public Worker() {
+    private int id;
+    private int nodeCount;
+    private int memory;
+    private Map<Integer, Dianode> nodes;
+    private Set<Dianode> neighborNodes;
+    private Scoring scoring;
+
+    public Worker(int id, Scoring scoring) {
+        this.id = id;
+        this.nodeCount = 0;
+        this.memory = 0;
+        this.nodes = new HashMap<>();
+        this.neighborNodes = new HashSet<>();
+        this.scoring = scoring;
     }
 
     public int getId() {
@@ -45,36 +53,42 @@ public class Worker {
         this.nodes = nodes;
     }
 
-    private int id;
-    private int nodeCount;
-    //to rename
-    private int memory;
-    private Map<Integer, Dianode> nodes;
-
-    public Worker(int id) {
-        this.id = id;
-        this.nodeCount = 0;
-        this.memory = 0;
-        this.nodes = new HashMap<>();
+    public Set<Dianode> getNeighborNodes() {
+        return neighborNodes;
     }
 
-    public Dianode getNodeById(int nodeId) {
-        return nodes.get(nodeId);
+    public List<Dianode> getSortedNeighborNodes() {
+        List<Dianode> sortedNeighbors = new ArrayList<>(neighborNodes);
+        sortedNeighbors.sort(Comparator.comparingDouble((Dianode node) -> scoring.calculateWeightedEdgeCutScore(id, node)));
+        return sortedNeighbors;
+    }
+
+    public Dianode getTopNeighbor() {
+        List<Dianode> sortedNeighbors = getSortedNeighborNodes();
+        return sortedNeighbors.isEmpty() ? null : sortedNeighbors.get(0);
     }
 
     public void addNode(Dianode node) {
         nodes.put(node.getId(), node);
         nodeCount++;
         memory += node.getMemory();
-        //add worker id 
+        addNeighbors(node);
     }
 
     public void removeNode(Dianode node) {
         if (nodes.containsKey(node.getId())) {
             nodes.remove(node.getId());
             nodeCount--;
-            memory -= node.getMemory(); // Update the memory when a node is removed
+            memory -= node.getMemory();
+            // Additional logic can be added here to remove neighbors if necessary
         }
     }
 
+    private void addNeighbors(Dianode node) {
+        for (Dianode neighbor : node.getNeighbors()) {
+            if (!nodes.containsKey(neighbor.getId())) {
+                neighborNodes.add(neighbor);
+            }
+        }
+    }
 }
