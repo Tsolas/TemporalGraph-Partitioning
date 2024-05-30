@@ -91,4 +91,8 @@ public class Worker {
             }
         }
     }
+
+    public Set<Dianode> getNeighbors() {
+        return neighborNodes;
+    }
 }

@@ -16,7 +16,8 @@ import java.util.List;
 public class TemporalGraphPartitioning {
 
     public static void main(String[] args) {
-        if (args.length < 3 || args.length > 4 || (!"1".equals(args[0]) && !"2".equals(args[0]) && !"3".equals(args[0]))) {
+        // Check for valid arguments
+        if ((args.length != 3 && args.length != 4) || (!"1".equals(args[0]) && !"2".equals(args[0]) && !"3".equals(args[0]))) {
             System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> [<load imbalance threshold>]");
             return;
         }
@@ -26,12 +27,18 @@ public class TemporalGraphPartitioning {
         String datasetFilePath = args[2];
         double loadImbalanceThreshold = 0.0;
 
-        if (!"3".equals(partitioningMethodSelector) && args.length != 4) {
-            System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> [<load imbalance threshold>]");
+        // Check if the partitioning method is BFS
+        if ("3".equals(partitioningMethodSelector) && args.length != 3) {
+            System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path>");
             return;
         }
 
+        // Parse the threshold parameter only if it is not BFS
         if (!"3".equals(partitioningMethodSelector)) {
+            if (args.length != 4) {
+                System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> <load imbalance threshold>");
+                return;
+            }
             loadImbalanceThreshold = Double.parseDouble(args[3]);
         }
 
@@ -58,10 +65,8 @@ public class TemporalGraphPartitioning {
 
         // Perform partitioning and display results
         if ("3".equals(partitioningMethodSelector)) {
-            // For BFS partitioning, the scoring is printed within the strategy
-            for (Dianode node : repository.getAllNodes().values()) {
-                partitioner.partitionNode(node);
-            }
+            // For BFS partitioning, call the partitionAllNodes method instead of partitionNode
+            ((BFSPartitioning) strategy).partitionAllNodes();
         } else {
             // Perform partitioning for the other methods
             for (Dianode node : repository.getAllNodes().values()) {
