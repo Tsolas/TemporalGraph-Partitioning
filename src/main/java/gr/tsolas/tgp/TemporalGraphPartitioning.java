@@ -72,10 +72,6 @@ public class TemporalGraphPartitioning {
             for (Dianode node : repository.getAllNodes().values()) {
                 partitioner.partitionNode(node);
             }
-
-            // Display the partitioning results
-            displayWorkers(repository);
-
             // Calculate and display scores
             double loadImbalanceRatio = scoring.calculateLoadImbalanceRatio();
             System.out.println("Final Load Imbalance Ratio: " + loadImbalanceRatio);
@@ -86,6 +82,9 @@ public class TemporalGraphPartitioning {
             double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
             System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
             System.out.println("Total Edges:  " + parser.getEdgeCount());
+            // Display the partitioning results
+            displayWorkers(repository);
+
         }
     }
 

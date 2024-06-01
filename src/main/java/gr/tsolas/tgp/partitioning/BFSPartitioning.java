@@ -10,12 +10,14 @@ public class BFSPartitioning implements PartitioningStrategy {
     private Set<Integer> visitedNodes;
     private List<Dianode> allNodes;
     private Scoring scoring;
+    private Map<Integer, Queue<Dianode>> workerQueues; // Queue for each worker
 
     public BFSPartitioning(Map<Integer, Worker> workers, List<Dianode> allNodes, Scoring scoring) {
         this.workers = workers;
         this.visitedNodes = new HashSet<>();
         this.allNodes = new ArrayList<>(allNodes);
         this.scoring = scoring;
+        this.workerQueues = new HashMap<>();
     }
 
     @Override
@@ -24,13 +26,18 @@ public class BFSPartitioning implements PartitioningStrategy {
     }
 
     public void partitionAllNodes() {
+        System.out.println("Starting BFS partitioning...");
+
         // Step 1: Select random seed nodes and assign them to workers
         selectRandomSeedNodes();
 
-        // Step 2: Perform BFS to partition remaining nodes
+        // Step 2: Initialize queues for each worker with their neighbors
+        initializeWorkerQueues();
+
+        // Step 3: Perform BFS to partition remaining nodes
         partitionRemainingNodes();
 
-        // Step 3: Score the final partitioning
+        // Step 4: Score the final partitioning
         scorePartitioning();
     }
 
@@ -46,65 +53,71 @@ public class BFSPartitioning implements PartitioningStrategy {
                     worker.addNode(seedNode);
                     visitedNodes.add(seedNode.getId());
                     allNodes.remove(seedNode); // Remove seed node from allNodes list
-                    System.out.println("Assigned seed node " + seedNode.getId() + " to worker " + worker.getId());
+                    // System.out.println("Assigned seed node " + seedNode.getId() + " to worker " + worker.getId());
                 }
             }
+        }
+    }
+
+    private void initializeWorkerQueues() {
+        for (Worker worker : workers.values()) {
+            Queue<Dianode> queue = new PriorityQueue<>(Comparator.comparingDouble(node -> scoring.calculateWeightedEdgeCutScore(worker.getId(), node)));
+            queue.addAll(worker.getNeighbors());
+            workerQueues.put(worker.getId(), queue);
         }
     }
 
     private void partitionRemainingNodes() {
-        // Get a list of workers for round-robin assignment
-        List<Worker> workerList = new ArrayList<>(workers.values());
+        boolean nodesRemaining = true;
 
-        for (Worker worker : workers.values()) {
-            for (Dianode seedNode : worker.getNodes().values()) {
-                bfs(seedNode, workerList);
-            }
-        }
-    }
+        while (nodesRemaining) {
+            nodesRemaining = false;
 
-    private void bfs(Dianode startNode, List<Worker> workerList) {
-        Queue<Dianode> queue = new LinkedList<>();
-        queue.add(startNode);
+            for (Worker worker : workers.values()) {
+                Queue<Dianode> queue = workerQueues.get(worker.getId());
 
-        while (!queue.isEmpty()) {
-            Dianode currentNode = queue.poll();
+                if (!queue.isEmpty()) {
+                    nodesRemaining = true;
+                    Dianode topNeighbor = queue.poll();
 
-            // Track top neighbors for each worker
-            Map<Dianode, List<Worker>> topNeighborsMap = new HashMap<>();
-            for (Worker worker : workerList) {
-                Dianode topNeighbor = worker.getTopNeighbor();
-                if (topNeighbor != null) {
-                    topNeighborsMap.computeIfAbsent(topNeighbor, k -> new ArrayList<>()).add(worker);
-                }
-            }
+                    if (topNeighbor != null && !visitedNodes.contains(topNeighbor.getId())) {
+                        // Check if this neighbor is the top neighbor in other queues
+                        Worker bestWorker = worker;
+                        double bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
+                        for (Worker otherWorker : workers.values()) {
+                            if (otherWorker.getId() != worker.getId()) {
+                                Queue<Dianode> otherQueue = workerQueues.get(otherWorker.getId());
+                                if (!otherQueue.isEmpty() && otherQueue.peek().equals(topNeighbor)) {
+                                    double otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
+                                    if (otherScore < bestScore || (otherScore == bestScore && otherWorker.getNodeCount() < bestWorker.getNodeCount())) {
+                                        bestWorker = otherWorker;
+                                        bestScore = otherScore;
+                                    }
+                                }
+                            }
+                        }
 
-            // Process each neighbor of the current node
-            for (Dianode neighbor : currentNode.getNeighbors()) {
-                if (!visitedNodes.contains(neighbor.getId())) {
-                    List<Worker> candidateWorkers = topNeighborsMap.getOrDefault(neighbor, new ArrayList<>());
+                        // Assign the neighbor to the best worker
+                        addNodeToWorker(topNeighbor, bestWorker);
 
-                    if (candidateWorkers.size() > 1) {
-                        // If the neighbor is in multiple workers' lists, choose the one with the least edge cut score
-                        Worker bestWorker = candidateWorkers.stream()
-                                .min(Comparator.comparingDouble(w -> scoring.calculateWeightedEdgeCutScore(w.getId(), neighbor)))
-                                .orElse(candidateWorkers.get(0));
-                        addNodeToWorker(neighbor, bestWorker, queue);
-                    } else if (!candidateWorkers.isEmpty()) {
-                        // If the neighbor is in only one worker's list, add it to that worker
-                        addNodeToWorker(neighbor, candidateWorkers.get(0), queue);
+                        // Remove the neighbor from all queues and from the list of all nodes
+                        allNodes.remove(topNeighbor);
+                        for (Queue<Dianode> q : workerQueues.values()) {
+                            q.remove(topNeighbor);
+                        }
                     }
                 }
             }
         }
     }
 
-    private void addNodeToWorker(Dianode node, Worker worker, Queue<Dianode> queue) {
+    private void addNodeToWorker(Dianode node, Worker worker) {
         if (!visitedNodes.contains(node.getId())) {
             worker.addNode(node);
-            queue.add(node);
+            workerQueues.get(worker.getId()).addAll(node.getNeighbors());
             visitedNodes.add(node.getId());
-            allNodes.remove(node); // Remove node from allNodes list
+            //System.out.println("Assigned node " + node.getId() + " to worker " + worker.getId());
+            //System.out.println("Nodes remaining: " + allNodes.size());
         }
     }
 

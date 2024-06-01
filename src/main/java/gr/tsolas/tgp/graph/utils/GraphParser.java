@@ -30,6 +30,7 @@ public class GraphParser {
         Path path = Paths.get(filepath);
         try (Stream<String> lines = Files.lines(path)) {
             lines.forEach(this::processLine);
+            System.out.println("Total nodes parsed: " + repository.getAllNodes().size());
         } catch (IOException e) {
             e.printStackTrace();
         }
