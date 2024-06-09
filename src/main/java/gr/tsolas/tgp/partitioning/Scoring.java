@@ -46,7 +46,7 @@ public class Scoring {
             }
         }
         if (minNodes == 0) {
-            return 1.0;
+            return 0.0;
         }
         return (double) minNodes / maxNodes;
     }

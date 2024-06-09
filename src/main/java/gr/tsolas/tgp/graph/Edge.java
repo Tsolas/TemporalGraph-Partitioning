@@ -77,7 +77,7 @@ public class Edge {
     }
 
     private int calculateWeight(int timeStart, int timeEnd) {
-        return timeEnd - timeStart;
+        return Math.abs(timeEnd - timeStart);
     }
 
     @Override
