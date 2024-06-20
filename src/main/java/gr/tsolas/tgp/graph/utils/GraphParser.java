@@ -73,6 +73,7 @@ public class GraphParser {
                 endNode.addNeighbor(startNode);  // Add neighbor to endNode
             }
         }
+        System.out.println("Total Edges should be " + edgeCount);
     }
 
     private void processGraph() {

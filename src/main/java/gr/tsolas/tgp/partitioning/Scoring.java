@@ -75,22 +75,38 @@ public class Scoring {
             }
         }
 
+        // Calculate the total edge weight and weighted edge cut score
+        /*
+        for (Worker worker : workers.values()) {
+            for (Dianode node : worker.getNodes().values()) {
+                Set<Edge> incomingEdges = node.getEdgesIncoming();
+                for (Edge edge : incomingEdges) {
+                    totalEdgeWeight += edge.getWeight();
+                    if (isEdgeCut(edge, worker.getId())) {
+                        weightedEdgeCutScore += edge.getWeight();
+                    }
+                }
+            }
+        }
+         */
         // Calculate the ratio
         return totalEdgeWeight == 0 ? 0 : weightedEdgeCutScore / (double) totalEdgeWeight;
     }
 
     public double calculateWeightedEdgeCutScore(int workerId, Dianode nodeToAdd) {
         double weightedEdgeCutScore = 0.0;
+
         //for all the edges of the node calculate the edge cuts considering the weight of each edge.
         Set<Edge> outgoingEdges = nodeToAdd.getEdgesOutgoing();
         for (Edge edge : outgoingEdges) {
-            if (isEdgeCut(edge, workerId)) {
+            if (repository.getNodeById(edge.getDianodeIdTarget()).getWorkerId() != -1 && isEdgeCut(edge, workerId)) {
                 weightedEdgeCutScore += edge.getWeight();
             }
         }
+
         Set<Edge> incomingEdges = nodeToAdd.getEdgesIncoming();
         for (Edge edge : incomingEdges) {
-            if (isEdgeCut(edge, workerId)) {
+            if (repository.getNodeById(edge.getDianodeIdSource()).getWorkerId() != -1 && isEdgeCutSource(edge, workerId)) {
                 weightedEdgeCutScore += edge.getWeight();
             }
         }
@@ -106,12 +122,13 @@ public class Scoring {
      */
     public int calculateTotalEdgeCuts() {
         int edgeCuts = 0;
+        int edges = 0;
         for (Dianode node : repository.getAllNodes().values()) {
-            int nodeWorkerId = findWorkerIdForNode(node);
+            int nodeWorkerId = node.getWorkerId();//findWorkerIdForNode(node);
             Set<Edge> outgoingEdges = node.getEdgesOutgoing();
             for (Edge edge : outgoingEdges) {
-                Dianode targetNode = repository.getNodeById(edge.getDianodeIdTarget());
-                if (targetNode != null && findWorkerIdForNode(targetNode) != nodeWorkerId) {
+                edges++;
+                if (isEdgeCut(edge, nodeWorkerId)) {
                     edgeCuts++;
                 }
             }
@@ -130,6 +147,10 @@ public class Scoring {
 
     private boolean isEdgeCut(Edge edge, int workerId) {
         return workerId != repository.getNodeById(edge.getDianodeIdTarget()).getWorkerId();
+    }
+
+    private boolean isEdgeCutSource(Edge edge, int workerId) {
+        return workerId != repository.getNodeById(edge.getDianodeIdSource()).getWorkerId();
     }
 
 }

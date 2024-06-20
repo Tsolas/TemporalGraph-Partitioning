@@ -70,88 +70,6 @@ public class BFSPartitioning implements PartitioningStrategy {
         }
     }
 
-//    private void partitionRemainingNodes() {
-//        boolean nodesRemaining = true;
-//
-//        while (nodesRemaining) {
-//            nodesRemaining = false;
-//
-//            for (Worker worker : workers.values()) {
-//                Queue<Dianode> queue = workerQueues.get(worker.getId());
-//
-//                if (!queue.isEmpty()) {
-//                    nodesRemaining = true;
-//                    Dianode topNeighbor = queue.poll();
-//
-//                    if (topNeighbor != null && !visitedNodes.contains(topNeighbor.getId())) {
-//                        // Check if this neighbor is the top neighbor in other queues
-//                        Worker bestWorker = worker;
-//                        double bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
-//                        for (Worker otherWorker : workers.values()) {
-//                            if (otherWorker.getId() != worker.getId()) {
-//                                Queue<Dianode> otherQueue = workerQueues.get(otherWorker.getId());
-//                                if (!otherQueue.isEmpty() && otherQueue.peek().equals(topNeighbor)) {
-//                                    double otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
-//                                    if (otherScore < bestScore || (otherScore == bestScore && otherWorker.getNodeCount() < bestWorker.getNodeCount())) {
-//                                        bestWorker = otherWorker;
-//                                        bestScore = otherScore;
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//                        // Assign the neighbor to the best worker
-//                        addNodeToWorker(topNeighbor, bestWorker);
-//
-//                        // Remove the neighbor from all queues and from the list of all nodes
-//                        allNodes.remove(topNeighbor);
-//                        for (Queue<Dianode> q : workerQueues.values()) {
-//                            q.remove(topNeighbor);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    private void partitionRemainingNodes() {
-//        boolean nodesRemaining = true;
-//
-//        while (nodesRemaining) {
-//            nodesRemaining = false;
-//
-//            for (Worker worker : workers.values()) {
-//                Queue<Dianode> queue = workerQueues.get(worker.getId());
-//                boolean isNotBestOption = false;
-//                do {
-//                    isNotBestOption = false;
-//                    if (!queue.isEmpty()) {
-//                        nodesRemaining = true;
-//                        Dianode topNeighbor = queue.poll();
-//
-//                        if (topNeighbor != null && !visitedNodes.contains(topNeighbor.getId())) {
-//                            // Check if this neighbor is the top neighbor in other queues
-//                            Worker bestWorker = worker;
-//                            double bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
-//                            for (Worker otherWorker : workers.values()) {
-//                                if (otherWorker.getId() != worker.getId()) {
-//                                    Queue<Dianode> otherQueue = workerQueues.get(otherWorker.getId());
-//                                    if (!otherQueue.isEmpty() && otherQueue.peek().equals(topNeighbor)) {
-//                                        double otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
-//                                        if (otherScore < bestScore || (otherScore == bestScore && otherWorker.getNodeCount() < bestWorker.getNodeCount())) {
-//                                            isNotBestOption = true;
-//                                            continue;
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        } else {
-//                            continue;
-//                        }
-//                    }
-//                } while (isNotBestOption);
-//            }
-//        }
-//    }
     private void partitionRemainingNodes() {
         boolean nodesRemaining = true;
 
@@ -161,10 +79,8 @@ public class BFSPartitioning implements PartitioningStrategy {
             for (Worker worker : workers.values()) {
                 Queue<Dianode> queue = workerQueues.get(worker.getId());
                 boolean isNotBestOption = false;
-
                 do {
                     isNotBestOption = false;
-
                     if (!queue.isEmpty()) {
                         nodesRemaining = true;
                         Dianode topNeighbor = queue.poll();
@@ -173,29 +89,24 @@ public class BFSPartitioning implements PartitioningStrategy {
                             // Check if this neighbor is the top neighbor in other queues
                             Worker bestWorker = worker;
                             double bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
-
                             for (Worker otherWorker : workers.values()) {
                                 if (otherWorker.getId() != worker.getId()) {
                                     Queue<Dianode> otherQueue = workerQueues.get(otherWorker.getId());
-
                                     if (!otherQueue.isEmpty() && otherQueue.peek().equals(topNeighbor)) {
                                         double otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
-
-                                        if (otherScore < bestScore || (otherScore == bestScore && otherWorker.getNodeCount() < bestWorker.getNodeCount())) {
+                                        if (otherScore < bestScore) {
                                             isNotBestOption = true;
-                                            bestWorker = otherWorker;
-                                            bestScore = otherScore;
+                                            break;
                                         }
                                     }
                                 }
                             }
-
                             if (!isNotBestOption) {
                                 // Assign the neighbor to the best worker
                                 addNodeToWorker(topNeighbor, bestWorker);
 
                                 // Remove the neighbor from all queues and from the list of all nodes
-                                allNodes.remove(topNeighbor);
+                                //allNodes.remove(topNeighbor);
                                 for (Queue<Dianode> q : workerQueues.values()) {
                                     q.remove(topNeighbor);
                                 }
@@ -203,9 +114,14 @@ public class BFSPartitioning implements PartitioningStrategy {
                                 // Mark this iteration as successful in placing a node
                                 nodesRemaining = true;
                             }
+                        } else {
+                            continue;
                         }
+
                     }
-                } while (isNotBestOption && !queue.isEmpty());
+
+                } while (isNotBestOption);
+
             }
         }
     }
@@ -215,10 +131,7 @@ public class BFSPartitioning implements PartitioningStrategy {
             worker.addNode(node);
             workerQueues.get(worker.getId()).addAll(node.getNeighbors());
             visitedNodes.add(node.getId());
-            // System.out.println(partitionedNodeCount);
             partitionedNodeCount++;
-            //System.out.println("Assigned node " + node.getId() + " to worker " + worker.getId());
-            //System.out.println("Nodes remaining: " + allNodes.size());
         }
     }
 

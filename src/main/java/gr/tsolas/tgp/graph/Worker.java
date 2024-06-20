@@ -70,6 +70,7 @@ public class Worker {
 
     public void addNode(Dianode node) {
         nodes.put(node.getId(), node);
+        node.setWorkerId(this.id); // Update the workerId of the node
         nodeCount++;
         memory += node.getMemory();
         addNeighbors(node);

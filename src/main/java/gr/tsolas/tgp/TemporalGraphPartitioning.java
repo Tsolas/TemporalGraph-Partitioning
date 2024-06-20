@@ -17,15 +17,21 @@ public class TemporalGraphPartitioning {
 
     public static void main(String[] args) {
         // Check for valid arguments
-        if ((args.length != 3 && args.length != 4) || (!"1".equals(args[0]) && !"2".equals(args[0]) && !"3".equals(args[0]))) {
-            System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> [<load imbalance threshold>]");
-            return;
-        }
+//        if ((args.length != 3 && args.length != 4)
+//                && ((!"1".equals(args[0]) && !"2".equals(args[0]) && !"3".equals(args[0]))
+//                || ("2".equals(args[0]) && args.length != 4)
+//                || (!"2".equals(args[0]) && args.length != 3))) {
+//            System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> [<load imbalance threshold>]");
+//            return;
+//        }
 
         String partitioningMethodSelector = args[0];
         int numberOfWorkers = Integer.parseInt(args[1]);
         String datasetFilePath = args[2];
-        double loadImbalanceThreshold = 0.0;
+        double loadImbalanceThreshold = 0.0; // Default value
+        if (args.length > 3) {
+            loadImbalanceThreshold = Double.parseDouble(args[3]);
+        }
 
         // Check if the partitioning method is BFS
         if ("3".equals(partitioningMethodSelector) && args.length != 3) {
@@ -33,9 +39,10 @@ public class TemporalGraphPartitioning {
             return;
         }
 
-        // Parse the threshold parameter only if it is not BFS
-        if (!"3".equals(partitioningMethodSelector)) {
+        // Parse the threshold parameter only if it is MyPartitioning
+        if ("2".equals(partitioningMethodSelector)) {
             if (args.length != 4) {
+                System.out.println("MyPartition needs a threshold parameter");
                 System.out.println("Usage: <1 for hash-based or 2 for myPartitioning or 3 for bfsPartitioning> <number of Workers> <dataset-file-path> <load imbalance threshold>");
                 return;
             }
