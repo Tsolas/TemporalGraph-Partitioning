@@ -1,5 +1,6 @@
 package gr.tsolas.tgp.graph;
 
+import gr.tsolas.tgp.partitioning.Scoring;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,10 +8,20 @@ import java.util.Map;
  *
  * @author giorgos
  */
-
 public class Worker {
 
-    public Worker() {
+    private int id;
+    private int nodeCount;
+    private int memory;
+    private Map<Integer, Dianode> nodes;
+    private Scoring scoring;
+
+    public Worker(int id, Scoring scoring) {
+        this.id = id;
+        this.nodeCount = 0;
+        this.memory = 0;
+        this.nodes = new HashMap<>();
+        this.scoring = scoring;
     }
 
     public int getId() {
@@ -45,35 +56,18 @@ public class Worker {
         this.nodes = nodes;
     }
 
-    private int id;
-    private int nodeCount;
-    //to rename
-    private int memory;
-    private Map<Integer, Dianode> nodes;
-
-    public Worker(int id) {
-        this.id = id;
-        this.nodeCount = 0;
-        this.memory = 0;
-        this.nodes = new HashMap<>();
-    }
-
-    public Dianode getNodeById(int nodeId) {
-        return nodes.get(nodeId);
-    }
-
     public void addNode(Dianode node) {
         nodes.put(node.getId(), node);
+        node.setWorkerId(this.id); // Update the workerId of the node
         nodeCount++;
         memory += node.getMemory();
-        //add worker id 
     }
 
     public void removeNode(Dianode node) {
         if (nodes.containsKey(node.getId())) {
             nodes.remove(node.getId());
             nodeCount--;
-            memory -= node.getMemory(); // Update the memory when a node is removed
+            memory -= node.getMemory();
         }
     }
 

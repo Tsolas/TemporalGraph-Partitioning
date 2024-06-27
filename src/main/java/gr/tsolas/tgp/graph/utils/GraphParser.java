@@ -20,6 +20,7 @@ public class GraphParser {
     private final Partitioner partitioner;
     public static int currentTimeInstance = 0;
     private int edgeCount = 0;
+    private int weightedEdgeCount = 0;
 
     public GraphParser(GraphRepository repository, Partitioner partitioner) {
         this.repository = repository;
@@ -46,31 +47,32 @@ public class GraphParser {
     }
 
     private void processVertex(String line) {
-    int firstSpace = line.indexOf(' ');
-    if (firstSpace != -1) {
-        int nodeId = Integer.parseInt(line.substring(firstSpace + 1));
-        Dianode node = new Dianode(nodeId, currentTimeInstance, -1);
-        repository.addNode(node);
-        partitioner.partitionNode(node);
-    }
-}
-
-    private void processEdge(String line) {
-    int firstSpace = line.indexOf(' ');
-    int secondSpace = line.indexOf(' ', firstSpace + 1);
-    if (secondSpace != -1) {
-        int startNodeId = Integer.parseInt(line.substring(firstSpace + 1, secondSpace));
-        int endNodeId = Integer.parseInt(line.substring(secondSpace + 1));
-        Edge edge = new Edge(currentTimeInstance, -1, startNodeId, endNodeId);
-        edgeCount++;
-        Dianode startNode = repository.getNodeById(startNodeId);
-        Dianode endNode = repository.getNodeById(endNodeId);
-        if (startNode != null && endNode != null) {
-            startNode.addOutgoingEdge(edge);
-            endNode.addIncomingEdge(edge);
+        int firstSpace = line.indexOf(' ');
+        if (firstSpace != -1) {
+            int nodeId = Integer.parseInt(line.substring(firstSpace + 1));
+            Dianode node = new Dianode(nodeId, currentTimeInstance, -1);
+            repository.addNode(node);
+            partitioner.partitionNode(node);
         }
     }
-}
+
+    private void processEdge(String line) {
+        int firstSpace = line.indexOf(' ');
+        int secondSpace = line.indexOf(' ', firstSpace + 1);
+        if (secondSpace != -1) {
+            int startNodeId = Integer.parseInt(line.substring(firstSpace + 1, secondSpace));
+            int endNodeId = Integer.parseInt(line.substring(secondSpace + 1));
+            Edge edge = new Edge(currentTimeInstance, -1, startNodeId, endNodeId);
+            edgeCount++;
+            weightedEdgeCount += edge.getWeight();
+            Dianode startNode = repository.getNodeById(startNodeId);
+            Dianode endNode = repository.getNodeById(endNodeId);
+            if (startNode != null && endNode != null) {
+                startNode.addOutgoingEdge(edge);
+                endNode.addIncomingEdge(edge);
+            }
+        }
+    }
 
     private void processGraph() {
         currentTimeInstance++;
@@ -78,5 +80,9 @@ public class GraphParser {
 
     public int getEdgeCount() {
         return edgeCount;
+    }
+
+    public int getWeightedEdgeCount() {
+        return weightedEdgeCount;
     }
 }

@@ -9,7 +9,24 @@ import java.util.HashSet;
  */
 public class Dianode {
 
+    private int id;
+    private int timeStart;
+    private int timeEnd;
+    private HashSet<Edge> edgesIncoming;
+    private HashSet<Edge> edgesOutgoing;
+    private int memory;
+    private int workerId;
+
     public Dianode() {
+    }
+
+    public Dianode(int id, int timeStart, int timeEnd) {
+        this.id = id;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.edgesIncoming = new HashSet<>();
+        this.edgesOutgoing = new HashSet<>();
+        this.memory = 0;
     }
 
     public int getId() {
@@ -71,24 +88,6 @@ public class Dianode {
         this.workerId = workerId;
     }
 
-    public Dianode(int id, int timeStart, int timeEnd) {
-        this.id = id;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.edgesIncoming = new HashSet<>();
-        this.edgesOutgoing = new HashSet<>();
-        this.memory = 0;
-
-    }
-
-    private int id;
-    private int timeStart;
-    private int timeEnd;
-    private HashSet<Edge> edgesIncoming;
-    private HashSet<Edge> edgesOutgoing;
-    private int memory;
-    private int workerId;
-
     public void addIncomingEdge(Edge edge) {
         this.edgesIncoming.add(edge);
         updateWeight();
@@ -111,5 +110,4 @@ public class Dianode {
                 + ", timeEnd=" + timeEnd
                 + '}';
     }
-
 }
