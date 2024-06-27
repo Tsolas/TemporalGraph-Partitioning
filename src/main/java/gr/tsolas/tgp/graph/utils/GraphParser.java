@@ -20,6 +20,7 @@ public class GraphParser {
     private final Partitioner partitioner;
     public static int currentTimeInstance = 0;
     private int edgeCount = 0;
+    private int weightedEdgeCount = 0;
 
     public GraphParser(GraphRepository repository, Partitioner partitioner) {
         this.repository = repository;
@@ -64,6 +65,8 @@ public class GraphParser {
             int endNodeId = Integer.parseInt(line.substring(secondSpace + 1));
             Edge edge = new Edge(currentTimeInstance, -1, startNodeId, endNodeId);
             edgeCount++;
+            weightedEdgeCount += edge.getWeight();
+
             Dianode startNode = repository.getNodeById(startNodeId);
             Dianode endNode = repository.getNodeById(endNodeId);
             if (startNode != null && endNode != null) {
@@ -73,7 +76,6 @@ public class GraphParser {
                 endNode.addNeighbor(startNode);  // Add neighbor to endNode
             }
         }
-        System.out.println("Total Edges should be " + edgeCount);
     }
 
     private void processGraph() {
@@ -82,5 +84,9 @@ public class GraphParser {
 
     public int getEdgeCount() {
         return edgeCount;
+    }
+
+    public int getWeightedEdgeCount() {
+        return weightedEdgeCount;
     }
 }
