@@ -8,6 +8,7 @@ import gr.tsolas.tgp.partitioning.Partitioner;
 import gr.tsolas.tgp.partitioning.PartitioningStrategy;
 import gr.tsolas.tgp.partitioning.Scoring;
 import gr.tsolas.tgp.repository.GraphRepository;
+import java.math.BigDecimal;
 
 /**
  *
@@ -51,9 +52,8 @@ public class TemporalGraphPartitioning {
 
         int totalEdgeCuts = scoring.calculateTotalEdgeCuts();
         System.out.println("Total Edge Cuts: " + totalEdgeCuts);
-        System.out.println("Total Weighted Edges:  " + parser.getWeightedEdgeCount());
 
-        double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
+        BigDecimal weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(repository.getAllWorkers());
         System.out.println("Weighted Edge Cut Score Ratio: " + weightedEdgeCutScoreRatio);
         System.out.println("Total Edges:  " + parser.getEdgeCount());
     }
