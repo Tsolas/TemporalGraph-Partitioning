@@ -20,6 +20,7 @@ public class Dianode {
     }
 
     public Dianode(int id, int timeStart, int timeEnd) {
+        this.workerId = -1;
         this.id = id;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;

@@ -4,6 +4,9 @@ import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Edge;
 import gr.tsolas.tgp.graph.Worker;
 import gr.tsolas.tgp.repository.GraphRepository;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,58 +61,53 @@ public class Scoring {
      * @param workers
      * @return
      */
-    public double calculateWeightedEdgeCutScoreRatio(Map<Integer, Worker> workers) {
-        double weightedEdgeCutScore = 0.0;
-        int totalEdgeWeight = 0;
+    public BigDecimal calculateWeightedEdgeCutScoreRatio(Map<Integer, Worker> workers) {
+        BigInteger weightedEdgeCutScore = BigInteger.ZERO;
+        BigInteger totalEdgeWeight = BigInteger.ZERO;
 
         // Calculate the total edge weight and weighted edge cut score
         for (Worker worker : workers.values()) {
             for (Dianode node : worker.getNodes().values()) {
                 Set<Edge> outgoingEdges = node.getEdgesOutgoing();
                 for (Edge edge : outgoingEdges) {
-                    totalEdgeWeight += edge.getWeight();
+                    BigInteger edgeWeight = edge.getWeight();
+                    totalEdgeWeight = totalEdgeWeight.add(edgeWeight);
                     if (isEdgeCut(edge, worker.getId())) {
-                        weightedEdgeCutScore += edge.getWeight();
+                        weightedEdgeCutScore = weightedEdgeCutScore.add(edgeWeight);
                     }
                 }
             }
         }
 
-        // Calculate the total edge weight and weighted edge cut score
-        /*
-        for (Worker worker : workers.values()) {
-            for (Dianode node : worker.getNodes().values()) {
-                Set<Edge> incomingEdges = node.getEdgesIncoming();
-                for (Edge edge : incomingEdges) {
-                    totalEdgeWeight += edge.getWeight();
-                    if (isEdgeCut(edge, worker.getId())) {
-                        weightedEdgeCutScore += edge.getWeight();
-                    }
-                }
-            }
+        System.out.println("Total Weight EdgeCut Score: " + weightedEdgeCutScore);
+        System.out.println("Total Edge Weight: " + totalEdgeWeight);
+
+        // Calculate the ratio using BigDecimal for division
+        if (totalEdgeWeight.equals(BigInteger.ZERO)) {
+            return BigDecimal.ZERO;
         }
-         */
-        // Calculate the ratio
-        return totalEdgeWeight == 0 ? 0 : weightedEdgeCutScore / (double) totalEdgeWeight;
+
+        return new BigDecimal(weightedEdgeCutScore).divide(new BigDecimal(totalEdgeWeight), MathContext.DECIMAL128);
     }
 
-    public double calculateWeightedEdgeCutScore(int workerId, Dianode nodeToAdd) {
-        double weightedEdgeCutScore = 0.0;
+    public BigInteger calculateWeightedEdgeCutScore(int workerId, Dianode nodeToAdd) {
+        BigInteger weightedEdgeCutScore = BigInteger.ZERO;
 
-        //for all the edges of the node calculate the edge cuts considering the weight of each edge.
+        // For all the edges of the node, calculate the edge cuts considering the weight of each edge.
         Set<Edge> outgoingEdges = nodeToAdd.getEdgesOutgoing();
         for (Edge edge : outgoingEdges) {
             if (repository.getNodeById(edge.getDianodeIdTarget()).getWorkerId() != -1 && isEdgeCut(edge, workerId)) {
-                weightedEdgeCutScore += edge.getWeight();
+                weightedEdgeCutScore = weightedEdgeCutScore.add(edge.getWeight());
             }
         }
 
         Set<Edge> incomingEdges = nodeToAdd.getEdgesIncoming();
         for (Edge edge : incomingEdges) {
             if (repository.getNodeById(edge.getDianodeIdSource()).getWorkerId() != -1 && isEdgeCutSource(edge, workerId)) {
-                weightedEdgeCutScore += edge.getWeight();
+                weightedEdgeCutScore = weightedEdgeCutScore.add(edge.getWeight());
             }
         }
+
         return weightedEdgeCutScore;
     }
 
@@ -127,7 +125,6 @@ public class Scoring {
             int nodeWorkerId = node.getWorkerId();//findWorkerIdForNode(node);
             Set<Edge> outgoingEdges = node.getEdgesOutgoing();
             for (Edge edge : outgoingEdges) {
-                edges++;
                 if (isEdgeCut(edge, nodeWorkerId)) {
                     edgeCuts++;
                 }

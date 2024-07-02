@@ -2,6 +2,8 @@ package gr.tsolas.tgp.partitioning;
 
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 public class BFSPartitioning implements PartitioningStrategy {
@@ -64,7 +66,7 @@ public class BFSPartitioning implements PartitioningStrategy {
 
     private void initializeWorkerQueues() {
         for (Worker worker : workers.values()) {
-            Queue<Dianode> queue = new PriorityQueue<>(Comparator.comparingDouble(node -> scoring.calculateWeightedEdgeCutScore(worker.getId(), node)));
+            Queue<Dianode> queue = new PriorityQueue<>(Comparator.comparing(node -> scoring.calculateWeightedEdgeCutScore(worker.getId(), node)));
             queue.addAll(worker.getNeighbors());
             workerQueues.put(worker.getId(), queue);
         }
@@ -88,13 +90,13 @@ public class BFSPartitioning implements PartitioningStrategy {
                         if (topNeighbor != null && !visitedNodes.contains(topNeighbor.getId())) {
                             // Check if this neighbor is the top neighbor in other queues
                             Worker bestWorker = worker;
-                            double bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
+                            BigInteger bestScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), topNeighbor);
                             for (Worker otherWorker : workers.values()) {
                                 if (otherWorker.getId() != worker.getId()) {
                                     Queue<Dianode> otherQueue = workerQueues.get(otherWorker.getId());
                                     if (!otherQueue.isEmpty() && otherQueue.peek().equals(topNeighbor)) {
-                                        double otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
-                                        if (otherScore < bestScore) {
+                                        BigInteger otherScore = scoring.calculateWeightedEdgeCutScore(otherWorker.getId(), topNeighbor);
+                                        if (otherScore.compareTo(bestScore) < 0) {
                                             isNotBestOption = true;
                                             break;
                                         }
@@ -106,7 +108,7 @@ public class BFSPartitioning implements PartitioningStrategy {
                                 addNodeToWorker(topNeighbor, bestWorker);
 
                                 // Remove the neighbor from all queues and from the list of all nodes
-                                //allNodes.remove(topNeighbor);
+                                allNodes.remove(topNeighbor);
                                 for (Queue<Dianode> q : workerQueues.values()) {
                                     q.remove(topNeighbor);
                                 }
@@ -137,7 +139,7 @@ public class BFSPartitioning implements PartitioningStrategy {
 
     private void scorePartitioning() {
         int totalEdgeCuts = scoring.calculateTotalEdgeCuts();
-        double weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(workers);
+        BigDecimal weightedEdgeCutScoreRatio = scoring.calculateWeightedEdgeCutScoreRatio(workers);
         double loadImbalanceRatio = scoring.calculateLoadImbalanceRatio();
 
         System.out.println("Total Edge Cuts: " + totalEdgeCuts);

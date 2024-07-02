@@ -1,6 +1,7 @@
 package gr.tsolas.tgp.graph;
 
 import gr.tsolas.tgp.graph.utils.GraphParser;
+import java.math.BigInteger;
 
 /**
  *
@@ -43,8 +44,8 @@ public class Edge {
         this.dianodeIdTarget = dianodeIdTarget;
     }
 
-    public int getWeight() {
-        return weight;
+    public BigInteger getWeight() {
+        return BigInteger.valueOf(weight);
     }
 
     public void setWeight(int weight) {

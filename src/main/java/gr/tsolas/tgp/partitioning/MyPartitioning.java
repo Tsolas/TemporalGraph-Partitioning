@@ -3,6 +3,7 @@ package gr.tsolas.tgp.partitioning;
 import gr.tsolas.tgp.graph.Dianode;
 import gr.tsolas.tgp.graph.Worker;
 import gr.tsolas.tgp.repository.GraphRepository;
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -57,10 +58,10 @@ public class MyPartitioning implements PartitioningStrategy {
      */
     private void assignBasedOnCommunicationCostScore(Dianode node) {
         Worker bestWorker = null;
-        double bestScore = Double.MAX_VALUE;
+        BigInteger bestScore = BigInteger.valueOf(Integer.MAX_VALUE);
         for (Worker worker : workers.values()) {
-            double edgeCutScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), node);
-            if (edgeCutScore < bestScore) {
+            BigInteger edgeCutScore = scoring.calculateWeightedEdgeCutScore(worker.getId(), node);
+            if (edgeCutScore.compareTo(bestScore) < 0) {
                 bestScore = edgeCutScore;
                 bestWorker = worker;
             }

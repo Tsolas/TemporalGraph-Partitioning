@@ -59,7 +59,7 @@ public class Worker {
 
     public List<Dianode> getSortedNeighborNodes() {
         List<Dianode> sortedNeighbors = new ArrayList<>(neighborNodes);
-        sortedNeighbors.sort(Comparator.comparingDouble((Dianode node) -> scoring.calculateWeightedEdgeCutScore(id, node)));
+        sortedNeighbors.sort(Comparator.comparing((Dianode node) -> scoring.calculateWeightedEdgeCutScore(id, node)));
         return sortedNeighbors;
     }
 
