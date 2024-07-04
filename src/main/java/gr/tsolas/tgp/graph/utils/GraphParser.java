@@ -51,7 +51,7 @@ public class GraphParser {
             int nodeId = Integer.parseInt(line.substring(firstSpace + 1));
             Dianode node = new Dianode(nodeId, currentTimeInstance, -1);
             repository.addNode(node);
-            partitioner.partitionNode(node);
+            //partitioner.partitionNode(node);
         }
     }
 
@@ -68,6 +68,8 @@ public class GraphParser {
             if (startNode != null && endNode != null) {
                 startNode.addOutgoingEdge(edge);
                 endNode.addIncomingEdge(edge);
+                partitioner.partitionNode(startNode);
+                partitioner.partitionNode(endNode);
             }
         }
     }

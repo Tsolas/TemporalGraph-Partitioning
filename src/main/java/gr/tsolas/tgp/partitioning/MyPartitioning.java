@@ -25,6 +25,13 @@ public class MyPartitioning implements PartitioningStrategy {
 
     @Override
     public void partition(Dianode node) {
+        if (node.getWorkerId() != -1) {
+            for (Worker worker : workers.values()) {
+                if (worker.getId() == node.getWorkerId()) {
+                    worker.removeNode(node);
+                }
+            }
+        }
         if (isLoadImbalanced(loadImbalanceThreshold)) {
             assignToLeastFullWorker(node);
         } else {

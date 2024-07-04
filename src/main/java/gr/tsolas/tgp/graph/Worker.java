@@ -68,6 +68,7 @@ public class Worker {
             nodes.remove(node.getId());
             nodeCount--;
             memory -= node.getMemory();
+            node.setWorkerId(-1);
         }
     }
 

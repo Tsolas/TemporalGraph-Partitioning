@@ -45,17 +45,17 @@ public class Edge {
     }
 
     public BigInteger getWeight() {
-        return BigInteger.valueOf(weight);
+        return weight;
     }
 
-    public void setWeight(int weight) {
+    public void setWeight(BigInteger weight) {
         this.weight = weight;
     }
 
     public Edge() {
     }
 
-    public Edge(int timeStart, int timeEnd, int dianodeIdSource, int dianodeIdTarget, int weight) {
+    public Edge(int timeStart, int timeEnd, int dianodeIdSource, int dianodeIdTarget, BigInteger weight) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.dianodeIdSource = dianodeIdSource;
@@ -67,7 +67,7 @@ public class Edge {
     private int timeEnd;
     private int dianodeIdSource;
     private int dianodeIdTarget;
-    private int weight;
+    private BigInteger weight;
 
     public Edge(int timeStart, int timeEnd, int dianodeIdStart, int dianodeIdEnd) {
         this.timeStart = timeStart;
@@ -77,8 +77,8 @@ public class Edge {
         this.weight = calculateWeight(timeStart, timeEnd); // Calculate the weight based on time instances
     }
 
-    private int calculateWeight(int timeStart, int timeEnd) {
-        return Math.abs(timeEnd - timeStart);
+    private BigInteger calculateWeight(int timeStart, int timeEnd) {
+        return BigInteger.valueOf(Math.abs(timeEnd - timeStart));
     }
 
     @Override
